@@ -1,4 +1,12 @@
-import React, { memo, ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, {
+  memo,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import useBounds from '../hooks/useBounds'
 import useStore from '../hooks/useStore'
 import ScreenshotsMagnifier from '../ScreenshotsMagnifier'
@@ -7,7 +15,7 @@ import getBoundsByPoints from './getBoundsByPoints'
 import './index.less'
 
 export default memo(function ScreenshotsBackground (): ReactElement | null {
-  const { url, image, width, height } = useStore()
+  const { url, image, width, height, enabled } = useStore()
   const [bounds, boundsDispatcher] = useBounds()
 
   const elRef = useRef<HTMLDivElement>(null)
@@ -58,10 +66,17 @@ export default memo(function ScreenshotsBackground (): ReactElement | null {
   )
 
   useEffect(() => {
+    if (!enabled) return
+
     const onMouseMove = (e: MouseEvent) => {
       if (elRef.current) {
         const rect = elRef.current.getBoundingClientRect()
-        if (e.clientX < rect.left || e.clientY < rect.top || e.clientX > rect.right || e.clientY > rect.bottom) {
+        if (
+          e.clientX < rect.left ||
+          e.clientY < rect.top ||
+          e.clientX > rect.right ||
+          e.clientY > rect.bottom
+        ) {
           setPosition(null)
         } else {
           setPosition({
@@ -102,14 +117,26 @@ export default memo(function ScreenshotsBackground (): ReactElement | null {
       window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
     }
-  }, [updateBounds])
+  }, [updateBounds, enabled])
+
+  useEffect(() => {
+    const onMouseleave = () => {
+      setPosition(null)
+    }
+
+    document.addEventListener('mouseleave', onMouseleave)
+
+    return () => {
+      document.removeEventListener('mouseleave', onMouseleave)
+    }
+  }, [])
 
   useLayoutEffect(() => {
-    if (!image || bounds) {
+    if (!image || bounds || !enabled) {
       // 重置位置
       setPosition(null)
     }
-  }, [image, bounds])
+  }, [image, bounds, enabled])
 
   // 没有加载完不显示图片
   if (!url || !image) {
@@ -117,10 +144,16 @@ export default memo(function ScreenshotsBackground (): ReactElement | null {
   }
 
   return (
-    <div ref={elRef} className='screenshots-background' onMouseDown={onMouseDown}>
+    <div
+      ref={elRef}
+      className='screenshots-background'
+      onMouseDown={onMouseDown}
+    >
       <img className='screenshots-background-image' src={url} />
       <div className='screenshots-background-mask' />
-      {position && !bounds && <ScreenshotsMagnifier x={position?.x} y={position?.y} />}
+      {position && !bounds && enabled && (
+        <ScreenshotsMagnifier x={position?.x} y={position?.y} />
+      )}
     </div>
   )
 })

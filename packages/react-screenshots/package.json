@@ -1,6 +1,6 @@
 {
-  "name": "react-screenshots",
-  "version": "0.5.22",
+  "name": "@shotz/react-screenshots",
+  "version": "0.0.1",
   "description": "a screenshot cropper tool by react",
   "main": "./lib/react-screenshots.cjs.js",
   "module": "./lib/react-screenshots.es.js",
@@ -12,30 +12,28 @@
   "scripts": {
     "start": "vite",
     "dev": "tsc --watch",
-    "build": "npm run lint && npm run clean && npm run build:web && npm run build:electron && npm run build:lib",
+    "build": "npm run lint && npm run clean && npm run build:electron && npm run build:lib",
     "build:web": "vite build --mode web",
     "build:electron": "vite build --mode electron",
     "build:lib": "vite build --mode lib && tsc --project tsconfig.build.json",
+    "release:yalc": "yalc publish",
     "lint": "eslint src --ext .js,.ts,.jsx,.tsx --fix",
     "preview": "vite preview",
     "clean": "rimraf dist lib electron"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nashaofu/screenshots.git"
+    "url": "https://github.com/ethan2478/electron-screenshots"
   },
   "keywords": [
     "screenshot",
     "cropper",
     "react"
   ],
-  "author": "nashaofu",
+  "author": "Ethan",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nashaofu/screenshots/issues"
-  },
-  "homepage": "https://github.com/nashaofu/screenshots/tree/master/packages/react-screenshots#readme",
   "publishConfig": {
+    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {

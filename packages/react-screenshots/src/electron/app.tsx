@@ -5,11 +5,11 @@ import { Lang } from '../Screenshots/zh_CN'
 import './app.less'
 
 export interface Display {
-  id: number
-  x: number
-  y: number
-  width: number
-  height: number
+  id: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export default function App (): JSX.Element {
@@ -18,6 +18,7 @@ export default function App (): JSX.Element {
   const [height, setHeight] = useState(window.innerHeight)
   const [display, setDisplay] = useState<Display | undefined>(undefined)
   const [lang, setLang] = useState<Lang | undefined>(undefined)
+  const [enabled, setEnabled] = useState(true)
 
   const onSave = useCallback(
     async (blob: Blob | null, bounds: Bounds) => {
@@ -43,28 +44,48 @@ export default function App (): JSX.Element {
     [display]
   )
 
+  const onBoundsChange = useCallback((bounds: Bounds | null) => {
+    // 通知正在截图
+    if (bounds) {
+      window.screenshots.activate()
+    }
+  }, [])
+
   useEffect(() => {
     const onSetLang = (lang: Lang) => {
+      console.log('app onSetLang==>>', lang)
       setLang(lang)
     }
 
     const onCapture = (display: Display, dataURL: string) => {
+      console.log('app onCapture==>>', JSON.stringify(display), dataURL.length)
       setDisplay(display)
       setUrl(dataURL)
     }
 
     const onReset = () => {
+      console.log('app onReset')
       setUrl(undefined)
       setDisplay(undefined)
-      // 确保截图区域被重置
-      requestAnimationFrame(() => window.screenshots.reset())
     }
 
+    const onActiveDisplayIdChange = (activeDisplayId: number) => {
+      if (
+        activeDisplayId.toString() !== window.screenshots.displayId?.toString()
+      ) {
+        setEnabled(false)
+      }
+    }
+
+    window.screenshots.on('activeDisplayIdChange', onActiveDisplayIdChange)
     window.screenshots.on('setLang', onSetLang)
     window.screenshots.on('capture', onCapture)
     window.screenshots.on('reset', onReset)
+
+    console.log('app ready==>>')
     // 告诉主进程页面准备完成
     window.screenshots.ready()
+
     return () => {
       window.screenshots.off('capture', onCapture)
       window.screenshots.off('setLang', onSetLang)
@@ -87,6 +108,7 @@ export default function App (): JSX.Element {
   return (
     <div className='body'>
       <Screenshots
+        enabled={enabled}
         url={url}
         width={width}
         height={height}
@@ -94,6 +116,7 @@ export default function App (): JSX.Element {
         onSave={onSave}
         onCancel={onCancel}
         onOk={onOk}
+        onBoundsChange={onBoundsChange}
       />
     </div>
   )

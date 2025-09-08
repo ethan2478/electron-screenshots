@@ -190,7 +190,9 @@ export default class Screenshots extends Events {
       // 之前的窗口不存在或被销毁了，重新创建新窗口
       // if (!oldWin || oldWin.isDestroyed?.()) {
       const windowTypes: Record<string, string | undefined> = {
-        darwin: undefined,
+        darwin: 'panel',
+        // linux 必须设置为 undefined，否则会在部分系统上不能触发focus 事件
+        // https://github.com/nashaofu/screenshots/issues/203#issuecomment-1518923486
         linux: undefined,
         win32: 'toolbar',
       };
@@ -284,6 +286,11 @@ export default class Screenshots extends Events {
         this.logger('windowClosed', display.id);
         this.wins.delete(display.id);
         this.views.delete(display.id);
+      });
+
+      newWin.on('show', () => {
+        newWin.setAlwaysOnTop(true);
+        newWin.focus();
       });
 
       newView.setBounds({

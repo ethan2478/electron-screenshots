@@ -45,8 +45,6 @@ export interface ScreenshotsOpts {
 export { Bounds };
 
 // TODO:
-// 2. 鼠标在两个屏幕间变化时需要页面及时响应下
-// 3. 只允许同时在一个屏幕上截图
 // 4. 启动截屏响应太慢的问题
 
 export default class Screenshots extends Events {

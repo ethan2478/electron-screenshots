@@ -10,17 +10,21 @@ import useLang from '../../hooks/useLang'
 import useOperation from '../../hooks/useOperation'
 import ScreenshotsButton from '../../ScreenshotsButton'
 import ScreenshotsSizeColor from '../../ScreenshotsSizeColor'
-import { HistoryItemEdit, HistoryItemSource, HistoryItemType } from '../../types'
+import {
+  HistoryItemEdit,
+  HistoryItemSource,
+  HistoryItemType
+} from '../../types'
 import { isHit, isHitCircle } from '../utils'
 import draw, { getEditedEllipseData } from './draw'
 
 export interface EllipseData {
-  size: number
-  color: string
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  size: number;
+  color: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
 
 export enum EllipseEditType {
@@ -32,15 +36,15 @@ export enum EllipseEditType {
   ResizeBottom,
   ResizeLeftBottom,
   ResizeLeft,
-  ResizeLeftTop
+  ResizeLeftTop,
 }
 
 export interface EllipseEditData {
-  type: EllipseEditType
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  type: EllipseEditType;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
 
 export default function Ellipse (): ReactElement {
@@ -51,8 +55,14 @@ export default function Ellipse (): ReactElement {
   const canvasContextRef = useCanvasContextRef()
   const [size, setSize] = useState(3)
   const [color, setColor] = useState('#ee5126')
-  const ellipseRef = useRef<HistoryItemSource<EllipseData, EllipseEditData> | null>(null)
-  const ellipseEditRef = useRef<HistoryItemEdit<EllipseEditData, EllipseData> | null>(null)
+  const ellipseRef = useRef<HistoryItemSource<
+    EllipseData,
+    EllipseEditData
+  > | null>(null)
+  const ellipseEditRef = useRef<HistoryItemEdit<
+    EllipseEditData,
+    EllipseData
+  > | null>(null)
 
   const checked = operation === 'Ellipse'
 
@@ -163,7 +173,8 @@ export default function Ellipse (): ReactElement {
         return
       }
 
-      const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+      const { left, top } =
+        canvasContextRef.current.canvas.getBoundingClientRect()
       const x = e.clientX - left
       const y = e.clientY - top
       ellipseRef.current = {
@@ -195,13 +206,16 @@ export default function Ellipse (): ReactElement {
         ellipseEditRef.current.data.x2 = e.clientX
         ellipseEditRef.current.data.y2 = e.clientY
         if (history.top !== ellipseEditRef.current) {
-          ellipseEditRef.current.source.editHistory.push(ellipseEditRef.current)
+          ellipseEditRef.current.source.editHistory.push(
+            ellipseEditRef.current
+          )
           historyDispatcher.push(ellipseEditRef.current)
         } else {
           historyDispatcher.set(history)
         }
       } else if (ellipseRef.current) {
-        const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+        const { left, top } =
+          canvasContextRef.current.canvas.getBoundingClientRect()
         ellipseRef.current.data.x2 = e.clientX - left
         ellipseRef.current.data.y2 = e.clientY - top
 
@@ -236,10 +250,17 @@ export default function Ellipse (): ReactElement {
   return (
     <ScreenshotsButton
       title={lang.operation_ellipse_title}
-      icon='icon-ellipse'
+      icon='icon-shotz-stroke-thin-ovel'
       checked={checked}
       onClick={onSelectEllipse}
-      option={<ScreenshotsSizeColor size={size} color={color} onSizeChange={setSize} onColorChange={setColor} />}
+      option={
+        <ScreenshotsSizeColor
+          size={size}
+          color={color}
+          onSizeChange={setSize}
+          onColorChange={setColor}
+        />
+      }
     />
   )
 }

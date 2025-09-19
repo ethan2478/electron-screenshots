@@ -1,4 +1,10 @@
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import ScreenshotsButton from '../../ScreenshotsButton'
 import ScreenshotsSize from '../../ScreenshotsSize'
 import useCanvasMousedown from '../../hooks/useCanvasMousedown'
@@ -14,14 +20,14 @@ import useCanvasContextRef from '../../hooks/useCanvasContextRef'
 import useLang from '../../hooks/useLang'
 
 export interface MosaicTile {
-  x: number
-  y: number
-  color: number[]
+  x: number;
+  y: number;
+  color: number[];
 }
 
 export interface MosaicData {
-  size: number
-  tiles: MosaicTile[]
+  size: number;
+  tiles: MosaicTile[];
 }
 
 function getColor (x: number, y: number, imageData: ImageData): number[] {
@@ -35,9 +41,12 @@ function getColor (x: number, y: number, imageData: ImageData): number[] {
   return Array.from(data.slice(index, index + 4))
 }
 
-function draw (ctx: CanvasRenderingContext2D, action: HistoryItemSource<MosaicData, null>) {
+function draw (
+  ctx: CanvasRenderingContext2D,
+  action: HistoryItemSource<MosaicData, null>
+) {
   const { tiles, size } = action.data
-  tiles.forEach(tile => {
+  tiles.forEach((tile) => {
     const r = Math.round(tile.color[0])
     const g = Math.round(tile.color[1])
     const b = Math.round(tile.color[2])
@@ -77,7 +86,12 @@ export default function Mosaic (): ReactElement {
 
   const onMousedown = useCallback(
     (e: MouseEvent): void => {
-      if (!checked || mosaicRef.current || !imageDataRef.current || !canvasContextRef.current) {
+      if (
+        !checked ||
+        mosaicRef.current ||
+        !imageDataRef.current ||
+        !canvasContextRef.current
+      ) {
         return
       }
 
@@ -107,7 +121,12 @@ export default function Mosaic (): ReactElement {
 
   const onMousemove = useCallback(
     (e: MouseEvent): void => {
-      if (!checked || !mosaicRef.current || !canvasContextRef.current || !imageDataRef.current) {
+      if (
+        !checked ||
+        !mosaicRef.current ||
+        !canvasContextRef.current ||
+        !imageDataRef.current
+      ) {
         return
       }
 
@@ -208,13 +227,18 @@ export default function Mosaic (): ReactElement {
       bounds.height
     )
 
-    imageDataRef.current = canvasContext.getImageData(0, 0, bounds.width, bounds.height)
+    imageDataRef.current = canvasContext.getImageData(
+      0,
+      0,
+      bounds.width,
+      bounds.height
+    )
   }, [width, height, bounds, image, checked])
 
   return (
     <ScreenshotsButton
       title={lang.operation_mosaic_title}
-      icon='icon-mosaic'
+      icon='icon-shotz-stroke-thin-mosaic'
       checked={checked}
       onClick={onSelectMosaic}
       option={<ScreenshotsSize value={size} onChange={setSize} />}

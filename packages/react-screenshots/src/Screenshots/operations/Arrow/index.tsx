@@ -4,7 +4,11 @@ import ScreenshotsSizeColor from '../../ScreenshotsSizeColor'
 import useCanvasMousedown from '../../hooks/useCanvasMousedown'
 import useCanvasMousemove from '../../hooks/useCanvasMousemove'
 import useCanvasMouseup from '../../hooks/useCanvasMouseup'
-import { HistoryItemEdit, HistoryItemSource, HistoryItemType } from '../../types'
+import {
+  HistoryItemEdit,
+  HistoryItemSource,
+  HistoryItemType
+} from '../../types'
 import useCursor from '../../hooks/useCursor'
 import useOperation from '../../hooks/useOperation'
 import useHistory from '../../hooks/useHistory'
@@ -15,26 +19,26 @@ import draw, { getEditedArrowData } from './draw'
 import useLang from '../../hooks/useLang'
 
 export interface ArrowData {
-  size: number
-  color: string
-  x1: number
-  x2: number
-  y1: number
-  y2: number
+  size: number;
+  color: string;
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
 }
 
 export enum ArrowEditType {
   Move,
   MoveStart,
-  MoveEnd
+  MoveEnd,
 }
 
 export interface ArrowEditData {
-  type: ArrowEditType
-  x1: number
-  x2: number
-  y1: number
-  y2: number
+  type: ArrowEditType;
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
 }
 
 export default function Arrow (): ReactElement {
@@ -45,8 +49,12 @@ export default function Arrow (): ReactElement {
   const canvasContextRef = useCanvasContextRef()
   const [size, setSize] = useState(3)
   const [color, setColor] = useState('#ee5126')
-  const arrowRef = useRef<HistoryItemSource<ArrowData, ArrowEditData> | null>(null)
-  const arrowEditRef = useRef<HistoryItemEdit<ArrowEditData, ArrowData> | null>(null)
+  const arrowRef = useRef<HistoryItemSource<ArrowData, ArrowEditData> | null>(
+    null
+  )
+  const arrowEditRef = useRef<HistoryItemEdit<ArrowEditData, ArrowData> | null>(
+    null
+  )
 
   const checked = operation === 'Arrow'
 
@@ -113,7 +121,8 @@ export default function Arrow (): ReactElement {
         return
       }
 
-      const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+      const { left, top } =
+        canvasContextRef.current.canvas.getBoundingClientRect()
       arrowRef.current = {
         name: 'Arrow',
         type: HistoryItemType.Source,
@@ -148,7 +157,8 @@ export default function Arrow (): ReactElement {
           historyDispatcher.set(history)
         }
       } else if (arrowRef.current) {
-        const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+        const { left, top } =
+          canvasContextRef.current.canvas.getBoundingClientRect()
 
         arrowRef.current.data.x2 = e.clientX - left
         arrowRef.current.data.y2 = e.clientY - top
@@ -184,10 +194,17 @@ export default function Arrow (): ReactElement {
   return (
     <ScreenshotsButton
       title={lang.operation_arrow_title}
-      icon='icon-arrow'
+      icon='icon-shotz-stroke-thin-arrow'
       checked={checked}
       onClick={onSelectArrow}
-      option={<ScreenshotsSizeColor size={size} color={color} onSizeChange={setSize} onColorChange={setColor} />}
+      option={
+        <ScreenshotsSizeColor
+          size={size}
+          color={color}
+          onSizeChange={setSize}
+          onColorChange={setColor}
+        />
+      }
     />
   )
 }

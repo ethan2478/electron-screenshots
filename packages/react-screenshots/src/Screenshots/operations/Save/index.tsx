@@ -26,12 +26,28 @@ export default function Save (): ReactElement {
         height,
         history,
         bounds
-      }).then(blob => {
+      }).then((blob) => {
         call('onSave', blob, bounds)
         reset()
       })
     })
-  }, [canvasContextRef, historyDispatcher, image, width, height, history, bounds, call, reset])
+  }, [
+    canvasContextRef,
+    historyDispatcher,
+    image,
+    width,
+    height,
+    history,
+    bounds,
+    call,
+    reset
+  ])
 
-  return <ScreenshotsButton title={lang.operation_save_title} icon='icon-save' onClick={onClick} />
+  return (
+    <ScreenshotsButton
+      title={lang.operation_save_title}
+      icon='icon-shotz-stroke-thin-saveas'
+      onClick={onClick}
+    />
+  )
 }

@@ -8,7 +8,7 @@ import React, {
   useState
 } from 'react'
 import composeImage from './composeImage'
-import './icons/iconfont.less'
+import './icons/iconfont.css'
 import './screenshots.less'
 import ScreenshotsBackground from './ScreenshotsBackground'
 import ScreenshotsCanvas from './ScreenshotsCanvas'

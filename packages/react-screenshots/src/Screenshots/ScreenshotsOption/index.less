@@ -1,10 +1,12 @@
-@import '../var.less';
+@import (reference) "../var.less";
+@import (reference) "../mixins.less";
 
 .screenshots-option {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   font-family: @font-family;
+  will-change: transform;
 
   &,
   * {
@@ -13,38 +15,34 @@
   }
 
   &-container {
-    height: @button-size + 3 * 2 + 2;
-    background-color: #fff;
-    padding: 3px;
-    border-radius: 2px;
-    border: 1px solid #ddd;
-    background-color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    .theme-prop(border-color, @light-primary-color, @dark-primary-color);
+    .theme-prop(background, linear-gradient(90deg, #f5f6f7 0%, #fff 100%), linear-gradient(90deg, #292929 0%, #2d2d2d 100%));
+    overflow: hidden;
   }
 
   &-arrow {
     position: absolute;
+    width: 0;
     border: 6px solid transparent;
   }
 
-  &[data-placement='top'] {
-    transform: translate(-50%, -11px);
-  }
-
-  &[data-placement='top'] &-arrow {
+  &[data-placement="top"] &-arrow {
     transform: translate(-50%, -1px);
-    border-top-color: #fff;
     top: 100%;
     left: 50%;
+    .theme-prop(border-top-color, @light-primary-color, @dark-primary-color);
   }
 
-  &[data-placement='bottom'] {
-    transform: translate(-50%, 11px);
-  }
-
-  &[data-placement='bottom'] &-arrow {
+  &[data-placement="bottom"] &-arrow {
     transform: translate(-50%, 1px);
-    border-bottom-color: #fff;
     bottom: 100%;
     left: 50%;
+    .theme-prop(border-bottom-color, @light-primary-color, @dark-primary-color);
   }
 }

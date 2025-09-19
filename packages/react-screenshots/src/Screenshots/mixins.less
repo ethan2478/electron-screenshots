@@ -1,0 +1,9 @@
+/* stylelint-disable */
+.theme-prop(@prop, @light, @dark) {
+  @{prop}: @light;
+
+  // TODO: 支持主题切换
+  :root[data-shotz-theme="dark"] & {
+    @{prop}: @dark;
+  }
+}

@@ -1,4 +1,5 @@
-@import '../var.less';
+@import "../var.less";
+@import "../mixins.less";
 
 .screenshots-operations {
   position: absolute;
@@ -9,17 +10,18 @@
   &-buttons {
     display: flex;
     align-items: center;
-    padding: 3px;
-    border-radius: 2px;
-    border: 1px solid #ddd;
-    background-color: #fff;
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    .theme-prop(border-color, @light-primary-color, @dark-primary-color);
+    .theme-prop(background, linear-gradient(90deg, #f5f6f7 0%, #fff 100%), linear-gradient(90deg, #292929 0%, #2d2d2d 100%));
     overflow: hidden;
   }
 
   &-divider {
     background-color: #ddd;
     width: 1px;
-    height: @button-size;
-    margin: 0 3px;
+    height: 16px;
+    .theme-prop(background-color, #ededed, @dark-primary-color);
   }
 }

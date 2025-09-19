@@ -60,3 +60,7 @@ typings/
 /dist
 /lib
 /electron
+
+# yalc
+yalc.lock
+.yalc

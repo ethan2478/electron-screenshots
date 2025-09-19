@@ -10,17 +10,21 @@ import useLang from '../../hooks/useLang'
 import useOperation from '../../hooks/useOperation'
 import ScreenshotsButton from '../../ScreenshotsButton'
 import ScreenshotsSizeColor from '../../ScreenshotsSizeColor'
-import { HistoryItemSource, HistoryItemEdit, HistoryItemType } from '../../types'
+import {
+  HistoryItemSource,
+  HistoryItemEdit,
+  HistoryItemType
+} from '../../types'
 import { isHit, isHitCircle } from '../utils'
 import draw, { getEditedRectangleData } from './draw'
 
 export interface RectangleData {
-  size: number
-  color: string
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  size: number;
+  color: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
 
 export enum RectangleEditType {
@@ -32,15 +36,15 @@ export enum RectangleEditType {
   ResizeBottom,
   ResizeLeftBottom,
   ResizeLeft,
-  ResizeLeftTop
+  ResizeLeftTop,
 }
 
 export interface RectangleEditData {
-  type: RectangleEditType
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  type: RectangleEditType;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
 
 export default function Rectangle (): ReactElement {
@@ -51,8 +55,14 @@ export default function Rectangle (): ReactElement {
   const canvasContextRef = useCanvasContextRef()
   const [size, setSize] = useState(3)
   const [color, setColor] = useState('#ee5126')
-  const rectangleRef = useRef<HistoryItemSource<RectangleData, RectangleEditData> | null>(null)
-  const rectangleEditRef = useRef<HistoryItemEdit<RectangleEditData, RectangleData> | null>(null)
+  const rectangleRef = useRef<HistoryItemSource<
+    RectangleData,
+    RectangleEditData
+  > | null>(null)
+  const rectangleEditRef = useRef<HistoryItemEdit<
+    RectangleEditData,
+    RectangleData
+  > | null>(null)
 
   const checked = operation === 'Rectangle'
 
@@ -75,7 +85,10 @@ export default function Rectangle (): ReactElement {
         return
       }
 
-      const source = action as HistoryItemSource<RectangleData, RectangleEditData>
+      const source = action as HistoryItemSource<
+        RectangleData,
+        RectangleEditData
+      >
       selectRectangle()
 
       const { x1, y1, x2, y2 } = getEditedRectangleData(source)
@@ -162,7 +175,8 @@ export default function Rectangle (): ReactElement {
         return
       }
 
-      const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+      const { left, top } =
+        canvasContextRef.current.canvas.getBoundingClientRect()
       const x = e.clientX - left
       const y = e.clientY - top
       rectangleRef.current = {
@@ -194,13 +208,16 @@ export default function Rectangle (): ReactElement {
         rectangleEditRef.current.data.x2 = e.clientX
         rectangleEditRef.current.data.y2 = e.clientY
         if (history.top !== rectangleEditRef.current) {
-          rectangleEditRef.current.source.editHistory.push(rectangleEditRef.current)
+          rectangleEditRef.current.source.editHistory.push(
+            rectangleEditRef.current
+          )
           historyDispatcher.push(rectangleEditRef.current)
         } else {
           historyDispatcher.set(history)
         }
       } else if (rectangleRef.current) {
-        const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+        const { left, top } =
+          canvasContextRef.current.canvas.getBoundingClientRect()
         const rectangleData = rectangleRef.current.data
         rectangleData.x2 = e.clientX - left
         rectangleData.y2 = e.clientY - top
@@ -236,10 +253,17 @@ export default function Rectangle (): ReactElement {
   return (
     <ScreenshotsButton
       title={lang.operation_rectangle_title}
-      icon='icon-rectangle'
+      icon='icon-shotz-stroke-thin-rectangle'
       checked={checked}
       onClick={onSelectRectangle}
-      option={<ScreenshotsSizeColor size={size} color={color} onSizeChange={setSize} onColorChange={setColor} />}
+      option={
+        <ScreenshotsSizeColor
+          size={size}
+          color={color}
+          onSizeChange={setSize}
+          onColorChange={setColor}
+        />
+      }
     />
   )
 }

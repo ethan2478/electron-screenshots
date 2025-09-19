@@ -1,29 +1,40 @@
-@import '../var.less';
+@import "../var.less";
+@import "../mixins.less";
 
 .screenshots-button {
+  flex: none;
   width: @button-size;
   height: @button-size;
-  line-height: @button-size;
-  color: #333;
-  font-size: 18px;
-  text-align: center;
-  margin: 0 3px;
-  vertical-align: middle;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #777;
   cursor: pointer;
 
-  &-checked,
-  &:hover {
-    background-color: #eee;
-    outline: 1px solid #777;
+  > .shotz-iconfont {
+    font-family: "Shotz Iconfont";
+    flex: none;
+    font-size: @button-size;
+    color: inherit;
   }
 
-  &-disabled {
-    color: #bbb;
-    cursor: not-allowed;
+  &.checked {
+    .theme-prop(border-color, @light-primary-color, @dark-secondary-color);
+    .theme-prop(background-color, @light-primary-color, @dark-secondary-color);
 
-    &:hover {
-      background-color: #fff;
-      outline: none;
-    }
+    box-shadow: 0 0 24px 0 rgb(0 0 0 / 10%);
+  }
+
+  &.checked,
+  &:not(.disabled):hover {
+    .theme-prop(color, #111, @light-primary-color);
+  }
+
+  &.disabled {
+    .theme-prop(color, #d0d0d0, #444);
+
+    cursor: not-allowed;
   }
 }

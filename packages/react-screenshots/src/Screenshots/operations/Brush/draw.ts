@@ -1,7 +1,10 @@
 import { BrushData, BrushEditData } from '.'
 import { HistoryItemSource } from '../../types'
 
-export default function draw (ctx: CanvasRenderingContext2D, action: HistoryItemSource<BrushData, BrushEditData>): void {
+export default function draw (
+  ctx: CanvasRenderingContext2D,
+  action: HistoryItemSource<BrushData, BrushEditData>
+): void {
   const { size, color, points } = action.data
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
@@ -28,7 +31,6 @@ export default function draw (ctx: CanvasRenderingContext2D, action: HistoryItem
 
   if (action.isSelected) {
     ctx.lineWidth = 1
-    ctx.strokeStyle = '#000000'
     ctx.beginPath()
     points.forEach((item, index) => {
       if (index === 0) {

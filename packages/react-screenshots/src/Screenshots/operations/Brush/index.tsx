@@ -8,23 +8,28 @@ import useCursor from '../../hooks/useCursor'
 import useOperation from '../../hooks/useOperation'
 import useHistory from '../../hooks/useHistory'
 import useCanvasContextRef from '../../hooks/useCanvasContextRef'
-import { HistoryItemEdit, HistoryItemSource, HistoryItemType, Point } from '../../types'
+import {
+  HistoryItemEdit,
+  HistoryItemSource,
+  HistoryItemType,
+  Point
+} from '../../types'
 import useDrawSelect from '../../hooks/useDrawSelect'
 import { isHit } from '../utils'
 import draw from './draw'
 import useLang from '../../hooks/useLang'
 
 export interface BrushData {
-  size: number
-  color: string
-  points: Point[]
+  size: number;
+  color: string;
+  points: Point[];
 }
 
 export interface BrushEditData {
-  x1: number
-  y1: number
-  x2: number
-  y2: number
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
 }
 
 export default function Brush (): ReactElement {
@@ -35,8 +40,12 @@ export default function Brush (): ReactElement {
   const [history, historyDispatcher] = useHistory()
   const [size, setSize] = useState(3)
   const [color, setColor] = useState('#ee5126')
-  const brushRef = useRef<HistoryItemSource<BrushData, BrushEditData> | null>(null)
-  const brushEditRef = useRef<HistoryItemEdit<BrushEditData, BrushData> | null>(null)
+  const brushRef = useRef<HistoryItemSource<BrushData, BrushEditData> | null>(
+    null
+  )
+  const brushEditRef = useRef<HistoryItemEdit<BrushEditData, BrushData> | null>(
+    null
+  )
 
   const checked = operation === 'Brush'
 
@@ -83,7 +92,8 @@ export default function Brush (): ReactElement {
         return
       }
 
-      const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+      const { left, top } =
+        canvasContextRef.current.canvas.getBoundingClientRect()
 
       brushRef.current = {
         name: 'Brush',
@@ -122,7 +132,8 @@ export default function Brush (): ReactElement {
           historyDispatcher.set(history)
         }
       } else if (brushRef.current) {
-        const { left, top } = canvasContextRef.current.canvas.getBoundingClientRect()
+        const { left, top } =
+          canvasContextRef.current.canvas.getBoundingClientRect()
 
         brushRef.current.data.points.push({
           x: e.clientX - left,
@@ -160,10 +171,17 @@ export default function Brush (): ReactElement {
   return (
     <ScreenshotsButton
       title={lang.operation_brush_title}
-      icon='icon-brush'
+      icon='icon-shotz-stroke-thin-draw'
       checked={checked}
       onClick={onSelectBrush}
-      option={<ScreenshotsSizeColor size={size} color={color} onSizeChange={setSize} onColorChange={setColor} />}
+      option={
+        <ScreenshotsSizeColor
+          size={size}
+          color={color}
+          onSizeChange={setSize}
+          onColorChange={setColor}
+        />
+      }
     />
   )
 }

@@ -38,10 +38,10 @@ export default memo(function ScreenshotsButton ({
   )
 
   if (checked) {
-    classNames.push('screenshots-button-checked')
+    classNames.push('checked')
   }
   if (disabled) {
-    classNames.push('screenshots-button-disabled')
+    classNames.push('disabled')
   }
 
   return (
@@ -51,7 +51,7 @@ export default memo(function ScreenshotsButton ({
         title={title}
         onClick={onButtonClick}
       >
-        <span className={icon} />
+        <span className={`${icon} shotz-iconfont`} />
       </div>
     </ScreenshotsOption>
   )

@@ -1,23 +1,36 @@
-import React, { cloneElement, memo, ReactElement, ReactNode, useContext, useEffect, useRef, useState } from 'react'
+import React, {
+  cloneElement,
+  memo,
+  ReactElement,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { createPortal } from 'react-dom'
 import { ScreenshotsOperationsCtx } from '../ScreenshotsOperations'
 import { Point } from '../types'
 import './index.less'
 
 export interface ScreenshotsOptionProps {
-  open?: boolean
-  content?: ReactNode
-  children: ReactElement
+  open?: boolean;
+  content?: ReactNode;
+  children: ReactElement;
 }
 
-export type Position = Point
+export type Position = Point;
 
 export enum Placement {
   Bottom = 'bottom',
-  Top = 'top'
+  Top = 'top',
 }
 
-export default memo(function ScreenshotsOption ({ open, content, children }: ScreenshotsOptionProps): ReactElement {
+export default memo(function ScreenshotsOption ({
+  open,
+  content,
+  children
+}: ScreenshotsOptionProps): ReactElement {
   const childrenRef = useRef<HTMLDivElement>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -45,59 +58,58 @@ export default memo(function ScreenshotsOption ({ open, content, children }: Scr
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (!open || !operationsRect || !childrenRef.current || !contentRef.current) {
+    if (
+      !open ||
+      !operationsRect ||
+      !childrenRef.current ||
+      !contentRef.current
+    ) {
       return
     }
 
+    // 视口宽高
+    const vpWidth = document.documentElement.clientWidth
+    const vpHeight = document.documentElement.clientHeight
+
+    // 按钮和操作区域rect
     const childrenRect = childrenRef.current.getBoundingClientRect()
     const contentRect = contentRef.current.getBoundingClientRect()
 
-    let currentPlacement = placement
-    let x = childrenRect.left + childrenRect.width / 2
-    let y = childrenRect.top + childrenRect.height
-    let currentOffsetX = offsetX
+    // 当前操作按钮的下边框中点坐标
+    const midBottomX = childrenRect.x + childrenRect.width / 2
+    const midBottomY = childrenRect.y + childrenRect.height
 
-    // 如果左右都越界了，就以左边界为准
-    if (x + contentRect.width / 2 > operationsRect.x + operationsRect.width) {
-      const ox = x
-      x = operationsRect.x + operationsRect.width - contentRect.width / 2
-      currentOffsetX = ox - x
-    }
+    // 当前操作按钮的上边框中点坐标
+    const midTopY = childrenRect.y
 
-    // 左边不能超出
-    if (x < operationsRect.x + contentRect.width / 2) {
-      const ox = x
-      x = operationsRect.x + contentRect.width / 2
-      currentOffsetX = ox - x
-    }
+    // 默认展示在下方正中间
+    let x = midBottomX - contentRect.width / 2
+    let y = midBottomY + 15
+    let offset = 0
+    let vPlacement = Placement.Bottom
 
-    // 如果上下都越界了，就以上边界为准
-    if (y > window.innerHeight - contentRect.height) {
-      if (currentPlacement === Placement.Bottom) {
-        currentPlacement = Placement.Top
-      }
-      y = childrenRect.top - contentRect.height
+    if (x > vpWidth) {
+      offset = x - vpWidth - contentRect.width
+      x = vpWidth - contentRect.width
     }
-
-    if (y < 0) {
-      if (currentPlacement === Placement.Top) {
-        currentPlacement = Placement.Bottom
-      }
-      y = childrenRect.top + childrenRect.height
+    if (x < 0) {
+      offset = x
+      x = 0
     }
-    if (currentPlacement !== placement) {
-      setPlacement(currentPlacement)
-    }
-    if (position?.x !== x || position.y !== y) {
-      setPosition({
-        x,
-        y
-      })
+    if (x + contentRect.width > vpWidth) {
+      offset = x
+      x = 0
     }
 
-    if (currentOffsetX !== offsetX) {
-      setOffsetX(currentOffsetX)
+    // 当放置在下面超过视口时，调整到上面
+    if (y + contentRect.height > vpHeight) {
+      y = midTopY - contentRect.height - 15
+      vPlacement = Placement.Top
     }
+
+    setOffsetX(offset)
+    setPlacement(vPlacement)
+    setPosition({ x, y })
   })
 
   return (
@@ -113,12 +125,17 @@ export default memo(function ScreenshotsOption ({ open, content, children }: Scr
             className='screenshots-option'
             style={{
               visibility: position ? 'visible' : 'hidden',
-              transform: `translate(${position?.x ?? 0}px, ${position?.y ?? 0}px)`
+              transform: `translate(${position?.x ?? 0}px, ${
+                position?.y ?? 0
+              }px)`
             }}
             data-placement={placement}
           >
             <div className='screenshots-option-container'>{content}</div>
-            <div className='screenshots-option-arrow' style={{ marginLeft: offsetX }} />
+            <div
+              className='screenshots-option-arrow'
+              style={{ marginLeft: offsetX }}
+            />
           </div>,
           getPopoverEl()
         )}

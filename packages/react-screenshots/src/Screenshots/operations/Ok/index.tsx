@@ -26,12 +26,28 @@ export default function Ok (): ReactElement {
         height,
         history,
         bounds
-      }).then(blob => {
+      }).then((blob) => {
         call('onOk', blob, bounds)
         reset()
       })
     })
-  }, [canvasContextRef, historyDispatcher, image, width, height, history, bounds, call, reset])
+  }, [
+    canvasContextRef,
+    historyDispatcher,
+    image,
+    width,
+    height,
+    history,
+    bounds,
+    call,
+    reset
+  ])
 
-  return <ScreenshotsButton title={lang.operation_ok_title} icon='icon-ok' onClick={onClick} />
+  return (
+    <ScreenshotsButton
+      title={lang.operation_ok_title}
+      icon='icon-shotz-stroke-thin-check'
+      onClick={onClick}
+    />
+  )
 }

@@ -277,7 +277,7 @@ export default function Text (): ReactElement {
     <>
       <ScreenshotsButton
         title={lang.operation_text_title}
-        icon='icon-text'
+        icon='icon-shotz-stroke-thin-text'
         checked={checked}
         onClick={onSelectText}
         option={

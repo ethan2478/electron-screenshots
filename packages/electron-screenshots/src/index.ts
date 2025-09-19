@@ -44,9 +44,6 @@ export interface ScreenshotsOpts {
 
 export { Bounds };
 
-// TODO:
-// 4. 启动截屏响应太慢的问题
-
 export default class Screenshots extends Events {
   // 截图窗口 - 每个屏幕一个窗口
   private wins: Map<number, BrowserWindow> = new Map();
@@ -300,7 +297,8 @@ export default class Screenshots extends Events {
         height: display.height,
       });
 
-      this.emit('windowCreated', display.id, newWin);
+      const event = new Event();
+      this.emit('windowCreated', event, display.id, newWin);
 
       this.views.set(display.id, newView);
       this.wins.set(display.id, newWin);
@@ -376,14 +374,14 @@ export default class Screenshots extends Events {
   /**
    * 设置语言
    */
-  public async setLang(displayId: number): Promise<void> {
+  public async setLang(displayId: number, lang?: Lang): Promise<void> {
     this.logger('setLang: o%', {
       displayId,
-      lang: this.lang,
+      lang: lang || this.lang,
     });
     const targetView = this.views.get(displayId);
     if (targetView) {
-      targetView.webContents.send('SCREENSHOTS:setLang', this.lang);
+      targetView.webContents.send('SCREENSHOTS:setLang', lang || this.lang);
     }
   }
 
@@ -442,6 +440,8 @@ export default class Screenshots extends Events {
     ipcMain.on('SCREENSHOTS:ready', (e, displayId: number) => {
       console.log('ipcMain.on SCREENSHOTS:ready');
       this.handleScreenshotReady(displayId);
+      const event = new Event();
+      this.emit('ready', event, displayId);
     });
     /**
      * OK事件

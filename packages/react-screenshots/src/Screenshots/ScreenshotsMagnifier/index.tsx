@@ -1,18 +1,27 @@
-import React, { memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, {
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState
+} from 'react'
 import useLang from '../hooks/useLang'
 import useStore from '../hooks/useStore'
 import { Position } from '../types'
 import './index.less'
 
 export interface ScreenshotsMagnifierProps {
-  x: number
-  y: number
+  x: number;
+  y: number;
 }
 
 const magnifierWidth = 100
 const magnifierHeight = 80
 
-export default memo(function ScreenshotsMagnifier ({ x, y }: ScreenshotsMagnifierProps) {
+export default memo(function ScreenshotsMagnifier ({
+  x,
+  y
+}: ScreenshotsMagnifierProps) {
   const { width, height, image } = useStore()
   const lang = useLang()
   const [position, setPosition] = useState<Position | null>(null)
@@ -76,9 +85,14 @@ export default memo(function ScreenshotsMagnifier ({ x, y }: ScreenshotsMagnifie
       magnifierWidth,
       magnifierHeight
     )
-    const { data } = ctx.getImageData(Math.floor(magnifierWidth / 2), Math.floor(magnifierHeight / 2), 1, 1)
+    const { data } = ctx.getImageData(
+      Math.floor(magnifierWidth / 2),
+      Math.floor(magnifierHeight / 2),
+      1,
+      1
+    )
     const hex = Array.from(data.slice(0, 3))
-      .map(val => (val >= 16 ? val.toString(16) : `0${val.toString(16)}`))
+      .map((val) => (val >= 16 ? val.toString(16) : `0${val.toString(16)}`))
       .join('')
       .toUpperCase()
 
@@ -103,9 +117,16 @@ export default memo(function ScreenshotsMagnifier ({ x, y }: ScreenshotsMagnifie
       </div>
       <div className='screenshots-magnifier-footer'>
         <div className='screenshots-magnifier-footer-item'>
-          {lang.magnifier_position_label}: ({x},{y})
+          <span className='screenshots-magnifier-footer-item-label'>
+            {lang.magnifier_position_label}:&nbsp;
+          </span>
+          <span>
+            ({x},{y})
+          </span>
         </div>
-        <div className='screenshots-magnifier-footer-item'>RGB: #{rgb}</div>
+        <div className='screenshots-magnifier-footer-item'>
+          RGB:&nbsp;#{rgb}
+        </div>
       </div>
     </div>
   )

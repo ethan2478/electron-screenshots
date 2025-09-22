@@ -1,4 +1,4 @@
-@import '../var.less';
+@import "../var.less";
 
 .screenshots-magnifier {
   position: absolute;
@@ -19,7 +19,7 @@
     position: relative;
     background-color: #fff;
     &:before {
-      content: '';
+      content: "";
       background-color: rgb(10, 114, 161);
       position: absolute;
       top: 50%;
@@ -29,7 +29,7 @@
       z-index: 1;
     }
     &:after {
-      content: '';
+      content: "";
       background-color: rgb(10, 114, 161);
       position: absolute;
       top: 0;
@@ -45,7 +45,7 @@
     }
   }
   &-footer {
-    height: 40px;
+    min-height: 40px;
     color: #fff;
     font-size: 11px;
     background-color: rgb(95, 94, 94);
@@ -53,9 +53,19 @@
     white-space: nowrap;
     overflow: hidden;
     text-align: center;
+
     &-item {
-      height: 18px;
       line-height: 18px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+
+      &-label {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
 }

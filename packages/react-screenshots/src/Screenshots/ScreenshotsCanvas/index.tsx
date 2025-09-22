@@ -67,14 +67,24 @@ export default memo(
     const isCanResize = bounds && !history.stack.length && !operation
 
     const draw = useCallback(() => {
-      if (!bounds || !ctxRef.current) {
+      if (!bounds || !ctxRef.current || !canvasRef.current) {
         return
       }
+
+      const $canvas = canvasRef.current
+      const dpr = window.devicePixelRatio
+
+      const targetWidth = bounds.width * dpr
+      const targetHeight = bounds.height * dpr
+      $canvas.width = targetWidth
+      $canvas.height = targetHeight
 
       const ctx = ctxRef.current
       ctx.imageSmoothingEnabled = true
       // 设置太高，图片会模糊
       ctx.imageSmoothingQuality = 'low'
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
       ctx.clearRect(0, 0, bounds.width, bounds.height)
 
       history.stack.slice(0, history.index + 1).forEach((item) => {

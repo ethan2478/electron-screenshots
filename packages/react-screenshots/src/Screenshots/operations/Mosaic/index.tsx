@@ -41,6 +41,48 @@ function getColor (x: number, y: number, imageData: ImageData): number[] {
   return Array.from(data.slice(index, index + 4))
 }
 
+// 计算以(x, y)为中心、边长为size的方块的平均颜色，坐标和尺寸基于截图区域Canvas
+function getAverageBlockColor (
+  x: number,
+  y: number,
+  size: number,
+  imageData: ImageData
+): number[] {
+  if (!imageData || size <= 1) {
+    return getColor(Math.round(x), Math.round(y), imageData)
+  }
+
+  const { data, width, height } = imageData
+  const half = Math.floor(size / 2)
+
+  const startX = Math.max(0, Math.floor(x) - half)
+  const startY = Math.max(0, Math.floor(y) - half)
+  const endX = Math.min(width - 1, Math.floor(x) + half)
+  const endY = Math.min(height - 1, Math.floor(y) + half)
+
+  let r = 0
+  let g = 0
+  let b = 0
+  let a = 0
+  let count = 0
+
+  for (let j = startY; j <= endY; j++) {
+    const rowIndex = j * width * 4
+    for (let i = startX; i <= endX; i++) {
+      const idx = rowIndex + i * 4
+      r += data[idx]
+      g += data[idx + 1]
+      b += data[idx + 2]
+      a += data[idx + 3]
+      count++
+    }
+  }
+
+  if (count === 0) return [0, 0, 0, 0]
+
+  return [r / count, g / count, b / count, a / count]
+}
+
 function draw (
   ctx: CanvasRenderingContext2D,
   action: HistoryItemSource<MosaicData, null>
@@ -68,6 +110,10 @@ export default function Mosaic (): ReactElement {
   const [size, setSize] = useState(3)
   const imageDataRef = useRef<ImageData | null>(null)
   const mosaicRef = useRef<HistoryItemSource<MosaicData, null> | null>(null)
+  // 记录当前一次笔划已添加的网格块，避免重复
+  const visitedKeyRef = useRef<Set<string>>(new Set())
+  // 记录上一网格中心坐标，用于在两点之间遍历
+  const lastCenterRef = useRef<{ x: number; y: number } | null>(null)
 
   const checked = operation === 'Mosaic'
 
@@ -84,6 +130,60 @@ export default function Mosaic (): ReactElement {
     historyDispatcher.clearSelect()
   }, [checked, selectMosaic, historyDispatcher])
 
+  // 将任意点(x, y)吸附到马赛克网格中心
+  const snapToGridCenter = useCallback(
+    (x: number, y: number, blockSize: number) => {
+      const half = blockSize / 2
+      const gx = Math.floor(x / blockSize) * blockSize + half
+      const gy = Math.floor(y / blockSize) * blockSize + half
+      return { x: Math.floor(gx), y: Math.floor(gy) }
+    },
+    []
+  )
+
+  // 添加一个以网格中心为单位的马赛克块（去重 + 颜色平均）
+  const addMosaicCell = useCallback(
+    (cx: number, cy: number, blockSize: number) => {
+      if (!imageDataRef.current || !mosaicRef.current) return
+
+      const key = `${cx},${cy}`
+      if (visitedKeyRef.current.has(key)) return
+
+      const color = getAverageBlockColor(
+        cx,
+        cy,
+        blockSize,
+        imageDataRef.current
+      )
+      mosaicRef.current.data.tiles.push({ x: cx, y: cy, color })
+      visitedKeyRef.current.add(key)
+    },
+    []
+  )
+
+  // 在两点之间按固定步长遍历，确保连续
+  const traverseBetween = useCallback(
+    (x0: number, y0: number, x1: number, y1: number, blockSize: number) => {
+      const dx = x1 - x0
+      const dy = y1 - y0
+      const dist = Math.hypot(dx, dy)
+      if (dist === 0) return
+
+      const step = Math.max(1, Math.floor(blockSize / 2))
+      const steps = Math.ceil(dist / step)
+      const inv = 1 / steps
+
+      for (let i = 1; i <= steps; i++) {
+        const t = i * inv
+        const px = x0 + dx * t
+        const py = y0 + dy * t
+        const { x: cx, y: cy } = snapToGridCenter(px, py, blockSize)
+        addMosaicCell(cx, cy, blockSize)
+      }
+    },
+    [addMosaicCell, snapToGridCenter]
+  )
+
   const onMousedown = useCallback(
     (e: MouseEvent): void => {
       if (
@@ -98,25 +198,33 @@ export default function Mosaic (): ReactElement {
       const rect = canvasContextRef.current.canvas.getBoundingClientRect()
       const x = e.clientX - rect.x
       const y = e.clientY - rect.y
-      const mosaicSize = size * 2
+      const mosaicSize = Math.max(2, size * 2)
+
+      const { x: cx, y: cy } = snapToGridCenter(x, y, mosaicSize)
+
+      visitedKeyRef.current.clear()
+      lastCenterRef.current = { x: cx, y: cy }
+
+      const color = getAverageBlockColor(
+        cx,
+        cy,
+        mosaicSize,
+        imageDataRef.current
+      )
+
       mosaicRef.current = {
         name: 'Mosaic',
         type: HistoryItemType.Source,
         data: {
           size: mosaicSize,
-          tiles: [
-            {
-              x,
-              y,
-              color: getColor(x, y, imageDataRef.current)
-            }
-          ]
+          tiles: [{ x: cx, y: cy, color }]
         },
         editHistory: [],
         draw
       }
+      visitedKeyRef.current.add(`${cx},${cy}`)
     },
-    [checked, size, canvasContextRef]
+    [checked, size, canvasContextRef, snapToGridCenter]
   )
 
   const onMousemove = useCallback(
@@ -135,44 +243,16 @@ export default function Mosaic (): ReactElement {
       const y = e.clientY - rect.y
 
       const mosaicSize = mosaicRef.current.data.size
-      const mosaicTiles = mosaicRef.current.data.tiles
 
-      let lastTile = mosaicTiles[mosaicTiles.length - 1]
+      const { x: cx, y: cy } = snapToGridCenter(x, y, mosaicSize)
 
-      if (!lastTile) {
-        mosaicTiles.push({
-          x,
-          y,
-          color: getColor(x, y, imageDataRef.current)
-        })
+      const last = lastCenterRef.current
+      if (!last) {
+        addMosaicCell(cx, cy, mosaicSize)
+        lastCenterRef.current = { x: cx, y: cy }
       } else {
-        const dx = lastTile.x - x
-        const dy = lastTile.y - y
-        // 减小点的个数
-        let length = Math.sqrt(dx ** 2 + dy ** 2)
-        const sin = -dy / length
-        const cos = -dx / length
-
-        while (length > mosaicSize) {
-          const cx = Math.floor(lastTile.x + mosaicSize * cos)
-          const cy = Math.floor(lastTile.y + mosaicSize * sin)
-          lastTile = {
-            x: cx,
-            y: cy,
-            color: getColor(cx, cy, imageDataRef.current)
-          }
-          mosaicTiles.push(lastTile)
-          length -= mosaicSize
-        }
-
-        // 最后一个位置补充一块
-        if (length > mosaicSize / 2) {
-          mosaicTiles.push({
-            x,
-            y,
-            color: getColor(x, y, imageDataRef.current)
-          })
-        }
+        traverseBetween(last.x, last.y, cx, cy, mosaicSize)
+        lastCenterRef.current = { x: cx, y: cy }
       }
 
       if (history.top !== mosaicRef.current) {
@@ -181,7 +261,15 @@ export default function Mosaic (): ReactElement {
         historyDispatcher.set(history)
       }
     },
-    [checked, canvasContextRef, history, historyDispatcher]
+    [
+      checked,
+      canvasContextRef,
+      history,
+      historyDispatcher,
+      addMosaicCell,
+      snapToGridCenter,
+      traverseBetween
+    ]
   )
 
   const onMouseup = useCallback(() => {
@@ -190,6 +278,8 @@ export default function Mosaic (): ReactElement {
     }
 
     mosaicRef.current = null
+    lastCenterRef.current = null
+    visitedKeyRef.current.clear()
   }, [checked])
 
   useCanvasMousedown(onMousedown)

@@ -1,6 +1,6 @@
 {
   "name": "@shotz/electron-screenshots",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "electron 截图插件",
   "types": "lib/index.d.ts",
   "main": "lib/index.cjs.js",
@@ -14,7 +14,8 @@
     "build": "npm run lint && npm run clean && tsc",
     "lint": "eslint . --ext .js,.ts --fix",
     "clean": "rimraf lib",
-    "release:yalc": "yalc publish"
+    "release:yalc": "yalc publish",
+    "release": "npm publish"
   },
   "repository": {
     "type": "git",
@@ -36,7 +37,7 @@
     "debug": "^4.3.4",
     "fs-extra": "^11.1.1",
     "node-screenshots": "^0.2.1",
-    "@shotz/react-screenshots": "0.0.5"
+    "@shotz/react-screenshots": "0.0.6"
   },
   "peerDependencies": {
     "electron": ">=14"

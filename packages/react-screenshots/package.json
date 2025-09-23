@@ -1,6 +1,6 @@
 {
   "name": "@shotz/react-screenshots",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "a screenshot cropper tool by react",
   "main": "./lib/react-screenshots.cjs.js",
   "module": "./lib/react-screenshots.es.js",
@@ -19,7 +19,8 @@
     "release:yalc": "yalc publish",
     "lint": "eslint src --ext .js,.ts,.jsx,.tsx --fix",
     "preview": "vite preview",
-    "clean": "rimraf dist lib electron"
+    "clean": "rimraf dist lib electron",
+    "release": "npm publish"
   },
   "repository": {
     "type": "git",
